@@ -1,0 +1,40 @@
+<?php
+
+
+namespace Models;
+
+
+class Model
+{
+    protected $pdo;
+    protected $table;
+    protected $findKey;
+
+    public function __construct()
+    {
+        try {
+            $connection = new \PDO('mysql:host='.DB_HOST.';dbname='. DB_NAME, DB_USER, DB_PASS);
+            $connection->setAttribute(\PDO::ATTR_ERRMODE,
+                \PDO::ERRMODE_EXCEPTION);
+            $connection->setAttribute(\PDO::ATTR_DEFAULT_FETCH_MODE,
+                \PDO::FETCH_OBJ);
+        } catch (\PDOException $e) {
+            die($e->getMessage());
+        }
+        $this->pdo = $connection;
+    }
+
+    public function find(string $key): \StdClass
+    {
+        $request = 'SELECT * FROM '.$this->table.' WHERE '.$this->findKey.' = :'.$this->findKey;
+        $pdoSt = $this->pdo->prepare($request);
+        $pdoSt->execute([':'.$this->findKey => $key]);
+
+        return $pdoSt->fetch();
+    }
+
+    public function all()
+    {
+        // À vous
+    }
+}
